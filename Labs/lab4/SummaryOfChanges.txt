@@ -1,0 +1,20 @@
+SummaryOfChanges
+----------------
+"Complete MIPS model Ver3.txt"
+* Removed aluout signal from controller
+* Converted 'logic [10:0] controls' to 'logic [9:0] controls', it did not create a problem before but still replacing with the correct one
+* "assign alusrca = (funct == 6'b000010);" should be "assign alusrca = (op == 6'b000000) & (funct == 6'b000010);" 
+
+"Lab4Spring21Ver2.doc"
+* Figure 1 changed (for RegDst and MemToReg signals, Replaced [2:0] with
+[1:0])
+* Part 1.f.v dataaddress renamed as dataadr
+* "You also need to put your MIPS code to you developed for Part 1.e to a txt file" should read "Part 1.d to a txt file".
+
+"JR Changes Ver2.docx"
+* Changed Figure 1 (for Jump, RegDst and MemToReg signals, Replaced [2:0] with [1:0])
+* Added Clarification
+
+"Final Datapath Ver2.png"
+* For Jump, RegDst and MemToReg signals, Replaced [2:0] with [1:0]
+
