@@ -1,0 +1,159 @@
+CS224
+Lab No. 1
+Section No. 5
+Your Full Name Muhammed Ikbal Dogan
+Bilkent ID 21702990
+
+PART 1
+
+	.text
+	.globl __start
+
+	#$s0 is array size
+	#$s1 is first index's adress
+	#$s2 is last index's adress
+	#$t0 is size/2
+	#$t1 is checker and counter
+
+__start:
+	lw $s0, arrsize #$s0 is the array size
+	add $t1,$0,1 # $t1 is checker 
+	ble $s0,$t1,symmetric # if size is <= 1 then it is symmetric 
+	
+	div $t0,$s0,2 # $t0 is array size/2 that which is for checking the symmetry
+
+	la $s1,array #first index's adress
+	la $s2,array 
+	mul $t1,$s0,4 # size * 4
+	addi $t1,$t1,-4
+	add $s2, $s2,$t1#last index's adress
+	add $t1,$zero,$zero #t1 is counter now
+loop:
+	slt $t2,$t1,$t0 #$t2 set to 0 if it reaches to size/2
+	beq $t2,$0,symmetric # if it reaches to final it means it's symmetric
+	lw $t3, 0($s1)
+	lw $t4, 0($s2)
+	bne $t3,$t4,notsymmetric
+	addi $t1,$t1,1
+	addi $s1,$s1,4
+	addi $s2,$s2,-4
+	j loop
+	
+	
+	
+
+
+symmetric:
+	jal printArray
+	la $a0,final1
+	li $v0,4
+	syscall
+	
+	li $v0,10
+	syscall
+
+
+notsymmetric:
+	jal printArray
+	la $a0,final2
+	li $v0,4
+	syscall
+	
+	li $v0,10
+	syscall
+	
+printArray:
+	lw $t0, arrsize #$t0 is the array size
+	add $t1,$zero,$zero #$t1 is the counter
+	la $t2, array
+printing:
+	beq $t1,$t0,done
+	lw $a0,0($t2)
+	li $v0, 1
+	syscall
+	
+	la $a0,space
+	li $v0, 4
+	syscall
+	addi $t2,$t2,4
+	addi $t1,$t1,1
+	j printing
+done:
+	la $a0,enter
+	li $v0, 4
+	syscall
+	jr $ra
+
+	.data
+array: .word 1, 7, 3,2,1
+arrsize: .word 5
+final1: .asciiz "The above array is symmetric"
+final2: .asciiz "The above array is not symmetric"
+space: .asciiz " "
+enter: .asciiz "\n"
+
+
+PART 2
+
+	.text
+.globl start
+#$t0 is a
+#$t1 is b
+#$t2 is c
+#$t3 is d
+start:
+	la $a0, entera
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	move $t0, $v0
+	
+	la $a0, enterb
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	move $t1, $v0
+	
+	la $a0, enterc
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	move $t2, $v0
+	
+	la $a0, enterd
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	move $t3, $v0
+	
+	sub $t1, $t1,$t2
+	mul $t0,$t0,$t1
+	div $t0,$t3
+	mfhi $t0
+	
+	la $a0, answer
+	li $v0,4
+	syscall
+	
+	move $a0,$t0
+	li $v0,1
+	syscall
+	
+
+	li $v0,10
+	syscall
+
+	.data
+entera: .asciiz "Enter a: "
+enterb: .asciiz "Enter b: "
+enterc: .asciiz "Enter c: "
+enterd: .asciiz "Enter d: "
+answer: .asciiz "The answer is: "

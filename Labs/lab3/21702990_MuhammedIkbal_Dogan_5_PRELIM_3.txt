@@ -1,0 +1,230 @@
+#CS224
+#Lab No. 3
+#Section No. 5
+#Muhammed Ikbal Dogan
+#21702990
+
+#PART1	
+
+_start:
+
+	
+	la $a0, _start
+	la $a1, endmain
+	jal instructionCount
+	add $s0,$0,$v0 # $s0 iscount of add instructions
+	add $s1,$0,$v1 # $s1 iscount of lw instructions
+	
+	
+	la $a0,addcntmain
+	li $v0,4
+	syscall
+	
+	add $a0,$0,$s0
+	li $v0,1
+	syscall
+	
+	la $a0,enter
+	li $v0,4
+	syscall
+	
+	la $a0,lwcntmain
+	li $v0,4
+	syscall
+	
+	add $a0,$0,$s1
+	li $v0,1
+	syscall
+	
+	la $a0,enter
+	li $v0,4
+	syscall
+	
+	
+	
+	la $a0, instructionCount
+	la $a1, endsub
+	jal instructionCount
+	add $s0,$s0,$v0 # $s0 iscount of add instructions
+	add $s1,$s1,$v1 # $s1 iscount of lw instructions
+	
+	la $a0,addcnt
+	li $v0,4
+	syscall
+	
+	add $a0,$0,$s0
+	li $v0,1
+	syscall
+	
+	la $a0,enter
+	li $v0,4
+	syscall
+	
+	la $a0,lwcnt
+	li $v0,4
+	syscall
+	
+	add $a0,$0,$s1
+	li $v0,1
+	syscall
+
+
+
+	li $v0,10
+	syscall
+endmain:
+
+#$s0 is the starting adress
+#$s1 is the ending adress
+#$s2 is counter for add instructions
+#$s3 is counter for lw instructions
+# S4 IS the mask for add
+# S5 IS CHECKER FOR ADD
+# S6 IS MASK FOR LW
+# S7 IS CHECKER FOR LW
+# A3 IS and condition register
+instructionCount:
+	addi $sp,$sp,-40
+	sw $s0,0($sp)
+	sw $s1,4($sp)
+	sw $s2,8($sp)
+	sw $s3,12($sp)
+	sw $s4,16($sp)
+	sw $s5,20($sp)
+	sw $s6,24($sp)
+	sw $s7,28($sp)
+	sw $a3,32($sp)
+	sw $ra,36($sp)
+	
+	add $s0,$a0,$0
+	add $s1,$a1,$0 
+	add $s2,$0,$0  
+	add $s3,$0,$0 
+	
+	li $s4, 0xFC00003F 
+	li $s5, 0x00000020 
+	li $s6, 0xFC000000
+	li $s7, 0x8C000000 
+loop:	
+	bge $s0,$s1,done
+	lw $a2,0($s0)
+	and $a3,$s4,$a2 
+	bne $s5,$a3,passadd
+	addi $s2,$s2,1
+passadd:
+	and $a3,$s6,$a2
+	bne $s7,$a3,passlw
+	addi $s3,$s3,1
+passlw:
+	addi $s0,$s0,4
+	j loop
+done:
+	add $v0,$0,$s2
+	add $v1,$0,$s3
+
+	lw $s0,0($sp)
+	lw $s1,4($sp)
+	lw $s2,8($sp)
+	lw $s3,12($sp)
+	lw $s4,16($sp)
+	lw $s5,20($sp)
+	lw $s6,24($sp)
+	lw $s7,28($sp)
+	lw $a3,32($sp)
+	lw $ra,36($sp)
+	addi $sp,$sp,40
+	jr $ra
+
+endsub:
+
+
+.data
+addcntmain: .asciiz "Count of add instructions in main only:"
+lwcntmain: .asciiz "Count of lw instructions in main only:"
+addcnt: .asciiz "Count of add instructions in total:"
+lwcnt: .asciiz "Count of lw instructions in total:"
+enter: .asciiz"\n"
+
+
+#PART2
+
+	.text
+	.globl _start
+	
+_start:
+	la $a0, numinput
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	
+	move $s0,$v0
+	
+	la $a0, dividerinput
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	
+	move $s1,$v0
+	
+	move $a0,$s0
+	move $a1,$s1
+	
+	jal RecursiveDivision
+	move $s2,$v0
+	
+	la $a0, result
+	li $v0,4
+	syscall
+	
+	move $a0,$s2
+	li $v0,1
+	syscall
+ask:
+	la $a0,asking
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	
+	beq $v0,1,_start
+	beq $v0,2,end
+	
+	la $a0,error
+	li $v0,4
+	syscall
+	
+	j ask
+
+end:
+	li $v0,10
+	syscall
+	
+	
+	
+RecursiveDivision:
+	addi $sp,$sp,-4
+	sw $ra,0($sp)
+	bge $a0,$a1,else
+	add $v0,$0,$0 #$v0 is result
+	addi $sp,$sp,4
+	jr $ra
+else:
+	sub $a0,$a0,$a1
+	jal RecursiveDivision
+	addi $v0,$v0,1
+	lw $ra, 0($sp)
+	addi $sp,$sp,4
+	jr $ra
+	
+	
+	.data
+numinput: .asciiz"Enter the number to divide:"
+dividerinput: .asciiz "Enter the divider:"
+result: .asciiz "The result is:"
+error: .asciiz "Please enter a valid input!\n"
+asking: .asciiz "\nDo you want to continue with new values?\n1)Yes\n2)No\n"

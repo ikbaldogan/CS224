@@ -1,0 +1,178 @@
+CS224
+Lab No. 1
+Section No. 5
+Your Full Name Muhammed Ikbal Dogan
+Bilkent ID 21702990
+
+PART 3
+
+	.text
+	.globl start
+start:
+	la $s0, array
+	lw $s1, arrsize
+	ble $s1,$0,error
+	
+	la $a0, welcome
+	li $v0,4
+	syscall
+	
+	lw $t0, 0($s0) # $t0 is min value
+	lw $t1, 0($s0) # $t1 is max value
+	add $t2, $zero, $zero # $t2 is average value counter
+	add $t3, $zero,$zero # $t3 is counter
+	move $t4,$s0 #copy of array address
+loop:
+	beq $t3,$s1,done
+	
+	li $v0,34 #print address in hex
+	add $a0,$zero,$t4
+	syscall
+	
+	li $v0,4
+	la $a0,space
+	syscall
+	
+	lw $t5, 0($t4) # $t5 is the value at index i
+	
+	li $v0, 1 #print value at index i
+	move $a0,$t5
+	syscall
+	
+	add $t2,$t2,$t5 #add value to total
+	
+	bgt $t5,$t0,passmin #setting min
+	move $t0,$t5
+passmin:
+	blt $t5, $t1, passmax #setting max
+	move $t1,$t5
+passmax:
+	addi $t3,$t3,1
+	addi $t4,$t4,4
+	
+	la $a0, enter
+	li $v0, 4
+	syscall
+	j loop
+
+	
+done:
+	div $t2, $t2,$s1 #finding average
+	
+	la $a0, averag
+	li $v0, 4
+	syscall
+	
+	li $v0,1 #print average
+	move $a0,$t2
+	syscall
+	
+	la $a0, enter
+	li $v0, 4
+	syscall
+	
+	la $a0, maxx
+	li $v0, 4
+	syscall
+	
+	li $v0,1 #print max
+	move $a0,$t1
+	syscall
+	
+	la $a0, enter
+	li $v0, 4
+	syscall
+	
+	la $a0, minn
+	li $v0, 4
+	syscall
+	
+	li $v0,1 #print min
+	move $a0,$t0
+	syscall
+	
+	la $a0, enter
+	li $v0, 4
+	syscall
+	
+	li $v0,10 #bye
+	syscall
+	
+error:
+	la $a0, errors
+	li $v0,4
+	syscall
+	
+	
+	li $v0,10
+	syscall
+	
+	.data
+array: .word 1, 7, 3,2,2
+arrsize: .word 5
+enter: .asciiz "\n"
+errors: .asciiz "There is no value to show."
+welcome: .asciiz"Memory Address   Array Element\nPosition (hex)   Value(int)\n=============   =============\n"
+space: .asciiz"\t"
+averag: .asciiz "Average: "
+maxx: .asciiz "Max: "
+minn: .asciiz"Min: "
+
+PART 4
+
+	.text
+.globl start
+#$t0 is a
+#$t1 is b
+#$t2 is c
+#$t3 is d
+start:
+	
+	la $a0, enterb
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	move $t1, $v0
+	
+	la $a0, enterc
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	move $t2, $v0
+	
+	la $a0, enterd
+	li $v0,4
+	syscall
+	
+	li $v0,5
+	syscall
+	move $t3, $v0
+	
+	div $t1,$t2
+	mfhi $t4
+	add $t4,$t4,$t3
+	div $t4,$t4,$t1
+	sub $t2,$t2,$t3
+	mul $t4,$t4,$t2
+
+	
+	la $a0, answer
+	li $v0,4
+	syscall
+	
+	move $a0,$t4
+	li $v0,1
+	syscall
+
+	li $v0,10
+	syscall
+
+	.data
+enterb: .asciiz "Enter B: "
+enterc: .asciiz "Enter C: "
+enterd: .asciiz "Enter D: "
+answer: .asciiz "The answer is: "
